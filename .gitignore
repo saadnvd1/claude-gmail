@@ -1,0 +1,11 @@
+# NEVER commit your Google credentials or token.
+client_secret.json
+token.json
+config.json
+send_log.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
