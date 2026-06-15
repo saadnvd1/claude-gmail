@@ -320,7 +320,7 @@ def _build_message(service, to: str, subject: str, body: str, reply_to_id: str =
 
     message["To"] = to
     raw = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
-    return raw, thread_id, to, message["subject"]
+    return raw, thread_id, to, message["Subject"]
 
 
 def create_draft(to: str, subject: str, body: str, reply_to_id: str = None):
