@@ -23,7 +23,7 @@ No monthly SaaS. No Zapier. You own the script and the credentials.
 ### 1. Get the code
 
 ```bash
-git clone https://github.com/<your-username>/claude-gmail.git
+git clone https://github.com/saadnvd1/claude-gmail.git
 cd claude-gmail
 pip install -r requirements.txt
 ```
