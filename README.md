@@ -13,8 +13,9 @@ No monthly SaaS. No Zapier. You own the script and the credentials.
 
 ## What you need
 
-- **Python 3.9+**
-- **[Claude Code](https://claude.com/claude-code)** installed (needs a paid Claude plan or API key)
+- **git** and **Python 3.9+** (`git --version` / `python3 --version` to check)
+- **[Claude Code](https://claude.com/claude-code)** — install with `curl -fsSL https://claude.ai/install.sh | bash`
+  (or `brew install --cask claude-code`). Needs a paid Claude plan (Pro or Max).
 - A **Google account** (a throwaway one is perfect for trying this out)
 - ~15 minutes
 
