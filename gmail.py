@@ -7,14 +7,14 @@ and DRAFT replies to your Gmail. It can also send — but the included CLAUDE.md
 tells the agent to NEVER send without your explicit approval.
 
 Usage:
-  python3 gmail.py setup                          # One-time OAuth setup
-  python3 gmail.py search "is:unread newer_than:2d"# Search emails
-  python3 gmail.py read <message_id>              # Read a specific email
-  python3 gmail.py threads "from:someone@x.com"   # Show full threads
-  python3 gmail.py draft <to> <subject> <body>    # Create a draft (no send)
-  python3 gmail.py reply <message_id> <body> --draft  # Draft a threaded reply
-  python3 gmail.py reply <message_id> <body>      # Send a threaded reply
-  python3 gmail.py send <to> <subject> <body>     # Send a new email
+  .venv/bin/python gmail.py setup                          # One-time OAuth setup
+  .venv/bin/python gmail.py search "is:unread newer_than:2d"# Search emails
+  .venv/bin/python gmail.py read <message_id>              # Read a specific email
+  .venv/bin/python gmail.py threads "from:someone@x.com"   # Show full threads
+  .venv/bin/python gmail.py draft <to> <subject> <body>    # Create a draft (no send)
+  .venv/bin/python gmail.py reply <message_id> <body> --draft  # Draft a threaded reply
+  .venv/bin/python gmail.py reply <message_id> <body>      # Send a threaded reply
+  .venv/bin/python gmail.py send <to> <subject> <body>     # Send a new email
 
 Credentials + config are stored in ~/.config/claude-gmail/
 (override with the CLAUDE_GMAIL_HOME environment variable).
@@ -103,12 +103,29 @@ def _rate_limit():
     time.sleep(RATE_LIMIT_DELAY)
 
 
+def _deps_missing(err: ImportError):
+    """Print a friendly fix instead of a scary traceback when libs aren't installed."""
+    print("ERROR: the Google API libraries aren't installed for this Python.")
+    print(f"  ({err})")
+    print()
+    print("Set up the project's virtual environment (works on any Python install):")
+    print("  python3 -m venv .venv")
+    print("  .venv/bin/pip install -r requirements.txt")
+    print()
+    print("Then always run this script with the venv's Python:")
+    print("  .venv/bin/python gmail.py <command>")
+    sys.exit(1)
+
+
 # ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
 def setup():
     """Run the one-time OAuth flow."""
-    from google_auth_oauthlib.flow import InstalledAppFlow
+    try:
+        from google_auth_oauthlib.flow import InstalledAppFlow
+    except ImportError as e:
+        _deps_missing(e)
 
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -122,7 +139,7 @@ def setup():
         print("3. Create an OAuth 2.0 Client ID (Application type: Desktop app)")
         print("4. Download the JSON file")
         print(f"5. Save it to: {creds_path}")
-        print("6. Re-run: python3 gmail.py setup")
+        print("6. Re-run: .venv/bin/python gmail.py setup")
         sys.exit(1)
 
     print("Starting OAuth flow — a browser window will open.")
@@ -153,13 +170,16 @@ def setup():
 
 def get_service():
     """Get an authenticated Gmail API service."""
-    from google.auth.transport.requests import Request
-    from google.oauth2.credentials import Credentials
-    from googleapiclient.discovery import build
+    try:
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
+    except ImportError as e:
+        _deps_missing(e)
 
     token_path = CONFIG_DIR / "token.json"
     if not token_path.exists():
-        print("No token found. Run: python3 gmail.py setup")
+        print("No token found. Run: .venv/bin/python gmail.py setup")
         sys.exit(1)
 
     creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
@@ -171,11 +191,11 @@ def get_service():
                 f.write(creds.to_json())
         except Exception as e:
             print(f"ERROR: Token refresh failed: {e}")
-            print("Re-run: python3 gmail.py setup")
+            print("Re-run: .venv/bin/python gmail.py setup")
             sys.exit(1)
 
     if not creds or not creds.valid:
-        print("ERROR: Token is invalid. Re-run: python3 gmail.py setup")
+        print("ERROR: Token is invalid. Re-run: .venv/bin/python gmail.py setup")
         sys.exit(1)
 
     return build("gmail", "v1", credentials=creds)

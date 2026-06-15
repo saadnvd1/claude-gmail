@@ -21,13 +21,21 @@ No monthly SaaS. No Zapier. You own the script and the credentials.
 
 ## Setup (one time)
 
-### 1. Get the code
+### 1. Get the code + install dependencies
 
 ```bash
 git clone https://github.com/saadnvd1/claude-gmail.git
 cd claude-gmail
-pip install -r requirements.txt
+./setup.sh
 ```
+
+`setup.sh` creates an isolated virtual environment in `.venv` and installs the dependencies
+into it. This works the same whether your Python came from python.org, Homebrew, or the system.
+(Manual equivalent: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.)
+
+> **Why a venv?** On many Macs the Homebrew/system Python is "externally managed" and a plain
+> `pip install` fails. The venv sidesteps that entirely — and keeps this project's packages
+> separate from everything else. From here on, run the script as **`.venv/bin/python gmail.py …`**.
 
 ### 2. Turn on the Gmail API + get your credentials
 
@@ -51,7 +59,7 @@ This is the part most tutorials skip. Do it once and you're done.
 ### 3. Authorize
 
 ```bash
-python3 gmail.py setup
+.venv/bin/python gmail.py setup
 ```
 
 A browser opens. Log in as the Google account you want the assistant to use. You'll
@@ -87,12 +95,12 @@ your OK** before sending anything.
 
 ## Use it directly (no AI)
 
-The script works on its own, too:
+The script works on its own, too (use the venv's Python):
 
 ```bash
-python3 gmail.py search "is:unread newer_than:2d"
-python3 gmail.py read <message_id>
-python3 gmail.py reply <message_id> "Sounds good, Friday works." --draft
+.venv/bin/python gmail.py search "is:unread newer_than:2d"
+.venv/bin/python gmail.py read <message_id>
+.venv/bin/python gmail.py reply <message_id> "Sounds good, Friday works." --draft
 ```
 
 | Command | What it does |
